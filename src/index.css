@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-lavender-50: #f5f3fa;
+  --color-lavender-100: #e8e4f4;
+  --color-lavender-200: #d4cde8;
+  --color-lavender-300: #b9aed9;
+  --color-lavender-400: #9c89c7;
+  --color-lavender-500: #8165b5;
+  --color-lavender-600: #6a4b9c;
+  --color-lavender-700: #573c80;
+  --color-lavender-800: #48336a;
+  --color-lavender-900: #3c2c56;
+  --color-lavender-950: #271a3d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: white !important;
+  }
+  
+  /* Hide UI elements during print */
+  button, 
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Ensure contract div expands fully */
+  .max-h-96 {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  
+  /* Remove shadows and borders for cleaner print */
+  .shadow-sm {
+    box-shadow: none !important;
+  }
+  
+  /* Fix page breaks */
+  h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  .grid {
+    page-break-inside: avoid;
+  }
+}

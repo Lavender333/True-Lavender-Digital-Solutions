@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null; }
+
+    function isValidMeeting(data) {
+      return data.keys().hasAll(['hostId', 'title', 'proposedTimes', 'status', 'meetUrl', 'createdAt']) &&
+        data.hostId is string && data.hostId.size() <= 128 && data.hostId == request.auth.uid &&
+        data.title is string && data.title.size() <= 200 &&
+        (!data.keys().hasAny(['description']) || (data.description is string && data.description.size() <= 1000)) &&
+        data.proposedTimes is list && data.proposedTimes.size() <= 20 && data.proposedTimes.size() > 0 &&
+        data.proposedTimes[0] is string && 
+        data.status is string && data.status in ['proposed', 'confirmed'] &&
+        data.meetUrl is string && data.meetUrl.size() <= 500 &&
+        data.createdAt is number &&
+        (!data.keys().hasAny(['selectedTime']) || data.selectedTime == null || (data.selectedTime is string && data.selectedTime.size() <= 100)) &&
+        (!data.keys().hasAny(['guestName']) || data.guestName == null || (data.guestName is string && data.guestName.size() <= 200)) &&
+        (!data.keys().hasAny(['guestEmail']) || data.guestEmail == null || (data.guestEmail is string && data.guestEmail.size() <= 200));
+    }
+
+    match /meetings/{meetingId} {
+      // The host can read their own meetings. The guest can read a specific meeting if they have the ID (link sharing).
+      allow get: if isValidId(meetingId); // public get by id is allowed for link sharing
+      allow list: if isSignedIn() && resource.data.hostId == request.auth.uid;
+      
+      allow create: if isSignedIn() && isValidId(meetingId) && isValidMeeting(incoming()) && incoming().createdAt == request.time.toMillis() && incoming().keys().size() <= 10;
+      
+      // We need an update action where the anonymous guest can select a time
+      // Action: Guest selects a time
+      allow update: if isValidId(meetingId) && 
+        (
+          (
+            existing().status == 'proposed' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'selectedTime', 'guestName', 'guestEmail']) &&
+            incoming().status == 'confirmed' &&
+            incoming().selectedTime is string && incoming().selectedTime.size() <= 100 &&
+            incoming().guestName is string && incoming().guestName.size() <= 200 &&
+            incoming().guestEmail is string && incoming().guestEmail.size() <= 200 &&
+            // We ensure they can't change the hostId or other fields
+            incoming().hostId == existing().hostId &&
+            incoming().title == existing().title &&
+            incoming().proposedTimes == existing().proposedTimes &&
+            incoming().meetUrl == existing().meetUrl &&
+            incoming().createdAt == existing().createdAt
+          )
+          ||
+          (
+            isSignedIn() && existing().hostId == request.auth.uid &&
+            isValidMeeting(incoming()) &&
+            incoming().hostId == existing().hostId &&
+            incoming().createdAt == existing().createdAt
+          )
+        );
+
+      allow delete: if isSignedIn() && isValidId(meetingId) && existing().hostId == request.auth.uid;
+    }
+  }
+}

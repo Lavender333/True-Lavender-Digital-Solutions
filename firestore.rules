@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAdmin() {
+      return request.auth != null && 
+        request.auth.token.email != null &&
+        (request.auth.token.email.lower() == 'antoinettewilliams@thetruelavender.online'.lower() || 
+         request.auth.token.email.lower() == 'antoinetteqwilliams@gmail.com'.lower());
+    }
+
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /meetings/{meetingId} {
+      allow read, write: if isAdmin();
+      
+      // Guest can read a specific meeting via Link Sharing
+      allow get: if true;
+      
+      // Guest can confirm a meeting
+      allow update: if resource.data.status == 'proposed' 
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'selectedTime', 'guestName', 'guestEmail'])
+                    && request.resource.data.status == 'confirmed'
+                    && request.resource.data.selectedTime is string
+                    && request.resource.data.guestName is string
+                    && request.resource.data.guestEmail is string;
+    }
+
+    match /mail/{mailId} {
+      allow create: if request.resource.data.to is list && request.resource.data.to.size() > 0;
+      allow read, write: if isAdmin();
+    }
+
+    match /contracts/{contractId} {
+      allow read, write: if isAdmin();
+
+      // Guest can read their own contract
+      allow get: if true;
+
+      // Guest can sign the contract
+      allow update: if resource.data.clientSignature == null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clientSignature', 'clientSignedAt', 'clientIp'])
+                    && request.resource.data.clientSignature is string
+                    && request.resource.data.clientSignedAt is number;
+    }
+  }
+}

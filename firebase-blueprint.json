@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "Meeting": {
+      "title": "Meeting",
+      "description": "A meeting proposal",
+      "type": "object",
+      "properties": {
+        "hostId": { "type": "string", "description": "The UID of the user who created the meeting" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "proposedTimes": { "type": "array", "items": { "type": "string" } },
+        "selectedTime": { "type": ["string", "null"] },
+        "guestName": { "type": ["string", "null"] },
+        "guestEmail": { "type": ["string", "null"] },
+        "status": { "type": "string", "enum": ["proposed", "confirmed"] },
+        "meetUrl": { "type": "string" },
+        "createdAt": { "type": "number", "description": "Creation timestamp" }
+      },
+      "required": ["hostId", "title", "proposedTimes", "status", "meetUrl", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A contact form message sent by a customer",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["name", "email", "message", "createdAt", "read"]
+    }
+  },
+  "firestore": {
+    "meetings/{meetingId}": {
+      "schema": "Meeting",
+      "description": "Stores proposed and confirmed meetings"
+    },
+    "messages/{messageId}": {
+      "schema": "Message",
+      "description": "Stores contact form submissions"
+    }
+  }
+}
