@@ -41,10 +41,7 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-medium mb-6 uppercase tracking-wider text-sm">Connect</h4>
             <ul className="space-y-4 font-light text-gray-400">
-              <li><a href="https://www.linkedin.com/in/antoinetteqwilliams/" className="hover:text-lavender-400 transition-colors" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-              <li><a href="mailto:antoinettewilliams@thetruelavender.online" className="hover:text-lavender-400 transition-colors">Email Us</a></li>
-              <li><a href="#contact" className="hover:text-lavender-400 transition-colors">Start a Project</a></li>
-              <li><a href="#login" className="hover:text-lavender-400 transition-colors">Client Portal</a></li>
+              <li><a href="#contact" className="hover:text-lavender-400 transition-colors">Contact Us</a></li>
             </ul>
           </div>
         </div>

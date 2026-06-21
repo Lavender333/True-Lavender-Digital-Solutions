@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
+const founderImageSrc = `${import.meta.env.BASE_URL}founder-antoinette-williams.png`;
+
 export default function About() {
   return (
     <section id="about" className="py-24 bg-white relative">
@@ -15,7 +17,7 @@ export default function About() {
           >
             <div className="relative aspect-square overflow-hidden rounded-3xl bg-lavender-50">
               <img 
-                src="/founder-antoinette-williams.png" 
+                src={founderImageSrc} 
                 alt="Antoinette Williams - Founder of True Lavender Digital Services" 
                 className="w-full h-full object-cover"
                 loading="lazy"
