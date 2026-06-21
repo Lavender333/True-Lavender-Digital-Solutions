@@ -15,7 +15,7 @@ export default function About() {
           >
             <div className="relative aspect-square overflow-hidden rounded-3xl bg-lavender-50">
               <img 
-                src="/profile-photo.png" 
+                src="/founder-antoinette-williams.png" 
                 alt="Antoinette Williams - Founder of True Lavender Digital Services" 
                 className="w-full h-full object-cover"
                 loading="lazy"
