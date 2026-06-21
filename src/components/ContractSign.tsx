@@ -4,6 +4,8 @@ import { db } from '../lib/firebase';
 import { format } from 'date-fns';
 import { FileSignature, Hexagon, CheckCircle2 } from 'lucide-react';
 
+const appUrl = (import.meta.env.VITE_APP_URL || 'https://thetruelavender.com').replace(/\/$/, '');
+
 export default function ContractSign({ contractId }: { contractId: string }) {
   const [contract, setContract] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -54,11 +56,11 @@ export default function ContractSign({ contractId }: { contractId: string }) {
           to: [contract.clientEmail, 'antoinettewilliams@thetruelavender.online'],
           message: {
             subject: `Contract Executed: ${contract.serviceName} with True Lavender`,
-            text: `Dear ${contract.clientName},\n\nYour contract for ${contract.serviceName} has been successfully signed by both parties. You may view and print your finalized contract here: ${window.location.origin}/?contract=${contractId}\n\nThank you for choosing True Lavender Digital Services!`,
+            text: `Dear ${contract.clientName},\n\nYour contract for ${contract.serviceName} has been successfully signed by both parties. You may view and print your finalized contract here: ${appUrl}/?contract=${contractId}\n\nThank you for choosing True Lavender Digital Services!`,
             html: `
               <p>Dear ${contract.clientName},</p>
               <p>Your contract for <strong>${contract.serviceName}</strong> has been successfully signed by both parties.</p>
-              <p>You may view and print your finalized contract here: <a href="${window.location.origin}/?contract=${contractId}">View Contract</a></p>
+              <p>You may view and print your finalized contract here: <a href="${appUrl}/?contract=${contractId}">View Contract</a></p>
               <p>Thank you for choosing True Lavender Digital Services!</p>
             `
           }

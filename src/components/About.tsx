@@ -55,7 +55,7 @@ export default function About() {
             
             <div className="flex gap-4">
               <a 
-                href="https://www.linkedin.com/in/antoinetteqwilliams/" 
+                href="https://www.linkedin.com/in/antoinette-w-12a0451b" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="px-6 py-3 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium text-sm"

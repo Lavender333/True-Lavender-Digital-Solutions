@@ -7,6 +7,8 @@ import { format } from 'date-fns';
 
 type TabType = 'meetings' | 'messages' | 'contracts' | 'trash';
 
+const appUrl = (import.meta.env.VITE_APP_URL || 'https://thetruelavender.com').replace(/\/$/, '');
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('meetings');
@@ -249,11 +251,7 @@ export default function Dashboard() {
     }
   };
 
-  const getBaseUrl = () => {
-    return window.location.origin.includes('ais-dev') 
-      ? window.location.origin.replace('ais-dev', 'ais-pre')
-      : window.location.origin;
-  };
+  const getBaseUrl = () => appUrl;
 
   const copyLink = (id: string, type: 'meet' | 'contract' = 'meet') => {
     const url = `${getBaseUrl()}?${type}=${id}`;
@@ -601,7 +599,7 @@ export default function Dashboard() {
                                 <input 
                                   type="text" 
                                   readOnly 
-                                  value={`${window.location.origin}?meet=${meeting.id}`} 
+                                  value={`${getBaseUrl()}?meet=${meeting.id}`} 
                                   className="flex-1 bg-transparent text-sm text-gray-600 outline-none px-2 cursor-pointer w-full min-w-0" 
                                   onClick={(e) => e.currentTarget.select()}
                                 />
@@ -622,7 +620,7 @@ export default function Dashboard() {
                                 Copy Email with Buttons
                               </button>
                               <a 
-                                href={`mailto:${meeting.recipientEmail || ''}?subject=${encodeURIComponent(`Invitation to Schedule: ${meeting.title}`)}&body=${encodeURIComponent(`Hi ${meeting.recipientFirstName || 'there'},\n\nI'm reaching out to get our meeting about ${meeting.title} on the calendar. Select the time below that works best for you:\n\n${meeting.proposedTimes.map((t: string) => `• ${format(new Date(t), "EEEE, MMM d, yyyy 'at' h:mm a")}\n  Select this time: ${window.location.origin}?meet=${meeting.id}&time=${encodeURIComponent(t)}`).join('\n\n')}\n\nIf that doesn't fit your schedule, please let me know and we can find another time.\n\nBest,\nAntoinette Williams\nhttps://www.thetruelavender.com`)}`}
+                                href={`mailto:${meeting.recipientEmail || ''}?subject=${encodeURIComponent(`Invitation to Schedule: ${meeting.title}`)}&body=${encodeURIComponent(`Hi ${meeting.recipientFirstName || 'there'},\n\nI'm reaching out to get our meeting about ${meeting.title} on the calendar. Select the time below that works best for you:\n\n${meeting.proposedTimes.map((t: string) => `• ${format(new Date(t), "EEEE, MMM d, yyyy 'at' h:mm a")}\n  Select this time: ${getBaseUrl()}?meet=${meeting.id}&time=${encodeURIComponent(t)}`).join('\n\n')}\n\nIf that doesn't fit your schedule, please let me know and we can find another time.\n\nBest,\nAntoinette Williams\nhttps://www.thetruelavender.com`)}`}
                                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors shadow-sm text-sm"
                               >
                                 <Mail className="w-4 h-4" /> 
