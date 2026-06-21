@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { getRedirectResult, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { LogIn } from 'lucide-react';
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  useEffect(() => {
+    async function checkRedirectResult() {
+      try {
+        const result = await getRedirectResult(auth);
+        const email = result?.user.email;
+        if (email && email !== 'antoinettewilliams@thetruelavender.online' && email !== 'antoinetteqwilliams@gmail.com') {
+          await auth.signOut();
+          setError('Unauthorized email address. Please use the admin email.');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to login');
+        console.error(err);
+      }
+    }
+
+    checkRedirectResult();
+  }, []);
+
+  const handleLogin = () => {
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const email = result.user.email;
-      if (email !== 'antoinettewilliams@thetruelavender.online' && email !== 'antoinetteqwilliams@gmail.com') {
-        await auth.signOut();
-        setError('Unauthorized email address. Please use the admin email.');
-      }
+      signInWithRedirect(auth, provider);
     } catch (err: any) {
       setError(err.message || 'Failed to login');
       console.error(err);
