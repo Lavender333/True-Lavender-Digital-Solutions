@@ -7,7 +7,6 @@ import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 
 const Services = lazy(() => import('./components/Services'));
-const PixelVerse = lazy(() => import('./components/PixelVerse'));
 const Approach = lazy(() => import('./components/Approach'));
 const About = lazy(() => import('./components/About'));
 const Portfolio = lazy(() => import('./components/Portfolio'));
@@ -113,7 +112,6 @@ export default function App() {
         {loadMarketingSections && (
           <Suspense fallback={null}>
             <Services />
-            <PixelVerse />
             <Approach />
             <About />
             <Portfolio />

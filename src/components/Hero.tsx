@@ -35,10 +35,10 @@ export default function Hero() {
             className="hero-reveal hero-reveal-delay-3 flex flex-col sm:flex-row gap-4"
           >
             <a
-              href="#pixelverse"
+              href="#services"
               className="px-8 py-4 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
             >
-              Explore PixelVerse
+              Explore Services
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
