@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
@@ -11,41 +10,29 @@ export default function Hero() {
       
       <div className="max-w-7xl mx-auto px-6 md:px-12 w-full">
         <div className="max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lavender-100 text-lavender-800 text-xs font-medium uppercase tracking-wider mb-8"
+          <div
+            className="hero-reveal inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lavender-100 text-lavender-800 text-xs font-medium uppercase tracking-wider mb-8"
           >
             <span className="w-2 h-2 rounded-full bg-lavender-600" />
             Web Design & Business Automation
-          </motion.div>
+          </div>
           
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-serif text-gray-900 leading-[1.1] tracking-tight mb-6"
+          <h1
+            className="hero-reveal hero-reveal-delay-1 text-5xl md:text-7xl font-serif text-gray-900 leading-[1.1] tracking-tight mb-6"
           >
             Elevating your <br/>
             <span className="text-lavender-600 italic leading-snug pr-2">business</span><br/>
             with precision.
-          </motion.h1>
+          </h1>
           
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-gray-600 font-light leading-relaxed mb-10 max-w-2xl"
+          <p
+            className="hero-reveal hero-reveal-delay-2 text-lg md:text-xl text-gray-600 font-light leading-relaxed mb-10 max-w-2xl"
           >
             True Lavender Digital Services, founded by Antoinette Williams, provides scalable website design, business automation, and strategic consulting for growing businesses in Ohio and nationwide.
-          </motion.p>
+          </p>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4"
+          <div
+            className="hero-reveal hero-reveal-delay-3 flex flex-col sm:flex-row gap-4"
           >
             <a
               href="#pixelverse"
@@ -60,7 +47,7 @@ export default function Hero() {
             >
               View Service Plans
             </a>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

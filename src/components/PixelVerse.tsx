@@ -81,6 +81,10 @@ export default function PixelVerse() {
               src="/true-lavender-social-card.png"
               alt="True Lavender Digital Solutions brand artwork"
               className="relative w-full rounded-2xl border border-white/10 shadow-2xl shadow-lavender-950/40 object-cover"
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="630"
             />
           </motion.div>
         </div>

@@ -5,22 +5,22 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
-import Services from './components/Services';
-import PixelVerse from './components/PixelVerse';
-import Approach from './components/Approach';
-import About from './components/About';
-import Portfolio from './components/Portfolio';
-import FAQ from './components/FAQ';
-import Testimonials from './components/Testimonials';
-import Pricing from './components/Pricing';
-import CTA from './components/CTA';
-import Footer from './components/Footer';
-import { useAuth } from './components/AuthProvider';
 
+const Services = lazy(() => import('./components/Services'));
+const PixelVerse = lazy(() => import('./components/PixelVerse'));
+const Approach = lazy(() => import('./components/Approach'));
+const About = lazy(() => import('./components/About'));
+const Portfolio = lazy(() => import('./components/Portfolio'));
+const FAQ = lazy(() => import('./components/FAQ'));
+const Testimonials = lazy(() => import('./components/Testimonials'));
+const Pricing = lazy(() => import('./components/Pricing'));
+const CTA = lazy(() => import('./components/CTA'));
+const Footer = lazy(() => import('./components/Footer'));
 const Login = lazy(() => import('./components/Login'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const BookingInvite = lazy(() => import('./components/BookingInvite'));
 const ContractSign = lazy(() => import('./components/ContractSign'));
+const AuthRoute = lazy(() => import('./components/AuthRoute'));
 
 function LoadingScreen() {
   return (
@@ -31,13 +31,16 @@ function LoadingScreen() {
 }
 
 export default function App() {
-  const { user, loading } = useAuth();
   const [hash, setHash] = useState(window.location.hash);
   const [meetId, setMeetId] = useState<string | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
+  const [loadMarketingSections, setLoadMarketingSections] = useState(window.location.hash.length > 0);
 
   useEffect(() => {
-    const handleHashChange = () => setHash(window.location.hash);
+    const handleHashChange = () => {
+      setHash(window.location.hash);
+      setLoadMarketingSections(true);
+    };
     window.addEventListener('hashchange', handleHashChange);
     
     // Check for meet param
@@ -51,6 +54,21 @@ export default function App() {
 
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  useEffect(() => {
+    if (loadMarketingSections || meetId || contractId || hash === '#login' || hash === '#dashboard') {
+      return;
+    }
+
+    const load = () => setLoadMarketingSections(true);
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(load, { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = globalThis.setTimeout(load, 500);
+    return () => globalThis.clearTimeout(timeoutId);
+  }, [contractId, hash, loadMarketingSections, meetId]);
 
   // If a meeting link is visited, show that instead of the site.
   if (meetId) {
@@ -71,46 +89,18 @@ export default function App() {
   }
 
   if (hash === '#login') {
-    if (loading) {
-      return <LoadingScreen />;
-    }
-
-    if (user) {
-      window.location.hash = '#dashboard';
-      return null;
-    }
     return (
-      <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
-        <Navigation />
-        <main className="flex-grow flex flex-col items-center justify-center pt-20">
-          <Suspense fallback={<LoadingScreen />}>
-            <Login />
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
+      <Suspense fallback={<LoadingScreen />}>
+        <AuthRoute route="login" component={Login} />
+      </Suspense>
     );
   }
 
   if (hash === '#dashboard') {
-    if (loading) {
-      return <LoadingScreen />;
-    }
-
-    if (!user) {
-      window.location.hash = '#login';
-      return null;
-    }
     return (
-      <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
-        <Navigation />
-        <main className="flex-grow pt-20">
-          <Suspense fallback={<LoadingScreen />}>
-            <Dashboard />
-          </Suspense>
-        </main>
-        <Footer />
-      </div>
+      <Suspense fallback={<LoadingScreen />}>
+        <AuthRoute route="dashboard" component={Dashboard} />
+      </Suspense>
     );
   }
 
@@ -120,18 +110,26 @@ export default function App() {
       
       <main>
         <Hero />
-        <Services />
-        <PixelVerse />
-        <Approach />
-        <About />
-        <Portfolio />
-        <Testimonials />
-        <Pricing />
-        <FAQ />
-        <CTA />
+        {loadMarketingSections && (
+          <Suspense fallback={null}>
+            <Services />
+            <PixelVerse />
+            <Approach />
+            <About />
+            <Portfolio />
+            <Testimonials />
+            <Pricing />
+            <FAQ />
+            <CTA />
+          </Suspense>
+        )}
       </main>
       
-      <Footer />
+      {loadMarketingSections && (
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
+      )}
     </div>
   );
 }

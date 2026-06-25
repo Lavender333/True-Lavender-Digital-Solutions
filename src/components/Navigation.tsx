@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Hexagon } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -76,14 +75,8 @@ export default function Navigation() {
       </div>
 
       {/* Mobile Nav */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t border-gray-100 overflow-hidden"
-          >
+      {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 overflow-hidden">
             <div className="flex flex-col px-6 py-6 gap-4">
               {navLinks.map((link) => (
                 <a
@@ -110,9 +103,8 @@ export default function Navigation() {
                 Start a Project
               </a>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </header>
   );
 }
