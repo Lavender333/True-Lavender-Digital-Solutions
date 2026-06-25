@@ -48,17 +48,17 @@ export default function Hero() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <a
-              href="#pricing"
+              href="#pixelverse"
               className="px-8 py-4 rounded-full bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 group"
             >
-              View Service Plans
+              Explore PixelVerse
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
-              href="#contact"
+              href="#pricing"
               className="px-8 py-4 rounded-full bg-white border border-gray-200 text-gray-900 font-medium hover:border-lavender-300 hover:bg-lavender-50 transition-all flex items-center justify-center"
             >
-              Start Your Project
+              View Service Plans
             </a>
           </motion.div>
         </div>

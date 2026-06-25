@@ -16,6 +16,7 @@ export default function Navigation() {
 
   const navLinks = [
     { name: 'Services', href: '#services' },
+    { name: 'PixelVerse', href: '#pixelverse' },
     { name: 'Approach', href: '#approach' },
     { name: 'Work', href: '#work' },
     { name: 'Pricing', href: '#pricing' },

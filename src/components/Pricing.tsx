@@ -93,7 +93,7 @@ const carePlans = [
   { 
     title: 'LavenderCare Plus', 
     hook: 'Maintenance with momentum.', 
-    description: 'Everything in Basic + 1.5 hours of content/design updates.', 
+    description: 'Everything in Basic + 3 hours of content, design, or app updates.', 
     price: '$175 / mo',
     yearlyPrice: '$1,750 / year (save ~15%)'
   },
@@ -380,4 +380,3 @@ function AnimatedTabContainer({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-

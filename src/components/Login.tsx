@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { getRedirectResult, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth } from '../lib/firebaseAuth';
 import { LogIn } from 'lucide-react';
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const getLoginErrorMessage = (err: any) => {
+    if (err?.code === 'auth/unauthorized-domain') {
+      return 'This website domain is not authorized in Firebase yet. Add thetruelavender.com in Firebase Authentication > Settings > Authorized domains.';
+    }
+
+    return err?.message || 'Failed to login';
+  };
 
   useEffect(() => {
     async function checkRedirectResult() {
@@ -16,7 +25,7 @@ export default function Login() {
           setError('Unauthorized email address. Please use the admin email.');
         }
       } catch (err: any) {
-        setError(err.message || 'Failed to login');
+        setError(getLoginErrorMessage(err));
         console.error(err);
       }
     }
@@ -24,13 +33,18 @@ export default function Login() {
     checkRedirectResult();
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
       const provider = new GoogleAuthProvider();
-      signInWithRedirect(auth, provider);
+      provider.setCustomParameters({ prompt: 'select_account' });
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      setError(getLoginErrorMessage(err));
       console.error(err);
+      setLoading(false);
     }
   };
 
@@ -50,10 +64,11 @@ export default function Login() {
 
         <button 
           onClick={handleLogin}
-          className="w-full py-4 rounded-xl bg-gray-900 text-white text-md font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+          disabled={loading}
+          className="w-full py-4 rounded-xl bg-gray-900 text-white text-md font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           <LogIn className="w-5 h-5" />
-          Sign in with Google
+          {loading ? 'Opening Google...' : 'Sign in with Google'}
         </button>
       </div>
     </div>

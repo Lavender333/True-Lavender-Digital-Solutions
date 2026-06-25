@@ -2,10 +2,11 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Services from './components/Services';
+import PixelVerse from './components/PixelVerse';
 import Approach from './components/Approach';
 import About from './components/About';
 import Portfolio from './components/Portfolio';
@@ -14,11 +15,20 @@ import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import BookingInvite from './components/BookingInvite';
-import ContractSign from './components/ContractSign';
 import { useAuth } from './components/AuthProvider';
+
+const Login = lazy(() => import('./components/Login'));
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const BookingInvite = lazy(() => import('./components/BookingInvite'));
+const ContractSign = lazy(() => import('./components/ContractSign'));
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lavender-600"></div>
+    </div>
+  );
+}
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -42,23 +52,29 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lavender-600"></div>
-    </div>;
-  }
-
   // If a meeting link is visited, show that instead of the site.
   if (meetId) {
-    return <BookingInvite meetingId={meetId} />;
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <BookingInvite meetingId={meetId} />
+      </Suspense>
+    );
   }
 
   // If a contract link is visited, show that instead of the site
   if (contractId) {
-    return <ContractSign contractId={contractId} />;
+    return (
+      <Suspense fallback={<LoadingScreen />}>
+        <ContractSign contractId={contractId} />
+      </Suspense>
+    );
   }
 
   if (hash === '#login') {
+    if (loading) {
+      return <LoadingScreen />;
+    }
+
     if (user) {
       window.location.hash = '#dashboard';
       return null;
@@ -67,7 +83,9 @@ export default function App() {
       <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
         <Navigation />
         <main className="flex-grow flex flex-col items-center justify-center pt-20">
-          <Login />
+          <Suspense fallback={<LoadingScreen />}>
+            <Login />
+          </Suspense>
         </main>
         <Footer />
       </div>
@@ -75,6 +93,10 @@ export default function App() {
   }
 
   if (hash === '#dashboard') {
+    if (loading) {
+      return <LoadingScreen />;
+    }
+
     if (!user) {
       window.location.hash = '#login';
       return null;
@@ -83,7 +105,9 @@ export default function App() {
       <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
         <Navigation />
         <main className="flex-grow pt-20">
-          <Dashboard />
+          <Suspense fallback={<LoadingScreen />}>
+            <Dashboard />
+          </Suspense>
         </main>
         <Footer />
       </div>
@@ -97,6 +121,7 @@ export default function App() {
       <main>
         <Hero />
         <Services />
+        <PixelVerse />
         <Approach />
         <About />
         <Portfolio />

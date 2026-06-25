@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { CheckCircle2 } from 'lucide-react';
 
 export default function CTA() {
@@ -22,6 +20,11 @@ export default function CTA() {
     setError('');
 
     try {
+      const [{ collection, addDoc }, { db }] = await Promise.all([
+        import('firebase/firestore'),
+        import('../lib/firebaseDb')
+      ]);
+
       await addDoc(collection(db, 'messages'), {
         name,
         email,

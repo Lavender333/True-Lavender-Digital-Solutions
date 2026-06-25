@@ -1,16 +1,26 @@
 {
-  "name": "True Lavender Digital Services",
+  "name": "True Lavender Digital Solutions",
   "short_name": "True Lavender",
-  "description": "Professional Web Design, SEO, AI Consulting, and Digital Services by Antoinette Williams in Ohio.",
+  "description": "Websites, branding, automation, and digital strategy for small businesses.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#8b5cf6",
+  "theme_color": "#6a4b9c",
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
