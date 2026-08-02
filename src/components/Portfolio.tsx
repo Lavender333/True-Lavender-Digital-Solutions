@@ -4,6 +4,12 @@ import { ExternalLink, Layout } from 'lucide-react';
 
 const examples = [
   {
+    title: 'Vershante Lynn Aesthetics',
+    link: 'https://vershantelynnaesthetics.com/',
+    displayLink: 'vershantelynnaesthetics.com',
+    note: 'Clinical skincare and aesthetics website',
+  },
+  {
     title: 'Sagi Solar Transportation',
     link: 'https://sagisolar.com/',
     displayLink: 'sagisolar.com',
