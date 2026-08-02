@@ -1,46 +1,46 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CreditCard, Rocket, Laptop, Paintbrush, ArrowRight } from 'lucide-react';
+import { CreditCard, Rocket, Paintbrush } from 'lucide-react';
 
 const websitePackages = [
   {
-    title: 'Launch + Automate',
-    hook: 'Full build plus systems that run themselves.',
-    description: 'Everything in Starter plus automation for booking, contracts, and payments, social media kit, and LavenderCare Plus.',
-    priceTotal: '$4,750',
-    priceMonthly: '$950/mo (x5)',
-    linkBook: 'https://buy.stripe.com/4gM4gB9418ET8Ra6Q27kc03',
-    linkPlan: 'https://buy.stripe.com/7sY9AVcgd08n9Ve6Q27kc07',
-    popular: true,
-  },
-  {
-    title: 'Commerce',
-    hook: 'Sell smarter with a polished online store.',
-    description: 'Up to 17 products uploaded, payment, tax & shipping setup, branded order emails, QA, and recorded handoff.',
-    priceTotal: '$2,500',
-    priceMonthly: '$625/mo (x4)',
-    linkBook: 'https://buy.stripe.com/00w28t1BzcV95EY4HU7kc08',
-    linkPlan: 'https://buy.stripe.com/5kQeVf0xvg7l6J2cam7kc06',
+    title: 'Essential',
+    hook: 'Elegant one-page site, fast and flawless.',
+    features: ['Single-page site, up to 6 sections', 'Contact form', 'SEO setup', 'Fast, polished delivery'],
+    priceTotal: '$975',
+    priceMonthly: '$325/mo × 3',
+    linkBook: 'https://buy.stripe.com/00w6oJ7ZXf3h1oI1vI7kc01',
+    linkPlan: 'https://buy.stripe.com/7sY3cxcgd9IXgjC5LY7kc04',
     popular: false,
   },
   {
     title: 'Starter',
     hook: 'Five-page design with built-in growth tools.',
-    description: 'Five-page site with CMS tutorial, two reusable post templates, accessibility & SEO essentials, and analytics goals.',
+    features: ['Five-page site', 'CMS tutorial', 'Two reusable post templates', 'Accessibility & SEO essentials', 'Analytics goals set up'],
     priceTotal: '$2,300',
-    priceMonthly: '$575/mo (x4)',
+    priceMonthly: '$575/mo × 4',
     linkBook: 'https://buy.stripe.com/cNibJ3fspg7l8Ra4HU7kc02',
     linkPlan: 'https://buy.stripe.com/00w9AVeol8ET8RagqC7kc05',
+    popular: true,
+  },
+  {
+    title: 'Commerce',
+    hook: 'Sell smarter with a polished online store.',
+    features: ['Up to 17 products uploaded', 'Payment, tax & shipping setup', 'Branded order emails', 'QA & recorded handoff'],
+    priceTotal: '$2,500',
+    priceMonthly: '$625/mo × 4',
+    linkBook: 'https://buy.stripe.com/00w28t1BzcV95EY4HU7kc08',
+    linkPlan: 'https://buy.stripe.com/5kQeVf0xvg7l6J2cam7kc06',
     popular: false,
   },
   {
-    title: 'Essential',
-    hook: 'Elegant one-page site, fast and flawless.',
-    description: 'Elegant single-page site with up to six sections, contact form, SEO setup, and fast, polished delivery.',
-    priceTotal: '$975',
-    priceMonthly: '$325/mo (x3)',
-    linkBook: 'https://buy.stripe.com/00w6oJ7ZXf3h1oI1vI7kc01',
-    linkPlan: 'https://buy.stripe.com/7sY3cxcgd9IXgjC5LY7kc04',
+    title: 'Launch + Automate',
+    hook: 'Full build plus systems that run themselves.',
+    features: ['Everything in Starter', 'Automation for booking, contracts & payments', 'Social media kit', 'LavenderCare Plus'],
+    priceTotal: '$4,750',
+    priceMonthly: '$950/mo × 5',
+    linkBook: 'https://buy.stripe.com/4gM4gB9418ET8Ra6Q27kc03',
+    linkPlan: 'https://buy.stripe.com/7sY9AVcgd08n9Ve6Q27kc07',
     popular: false,
   },
 ];
@@ -115,12 +115,12 @@ export default function Pricing() {
     <section id="pricing" className="py-24 bg-lavender-50">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-sm font-medium text-lavender-600 tracking-wider uppercase mb-3">Investment</h2>
+          <h2 className="text-xs font-semibold text-lavender-500 tracking-[0.16em] uppercase mb-3">Pricing</h2>
           <h3 className="text-4xl md:text-5xl font-serif text-gray-900 leading-tight mb-6">
-            Transparent Pricing & Packages
+            Find your fit
           </h3>
-          <p className="text-lg text-gray-600 font-light mb-10">
-            Select what you are looking to build today. We keep our offerings focused so you can easily find the perfect fit.
+          <p className="text-base text-gray-600 font-light mb-10 max-w-xl mx-auto leading-relaxed">
+            Every build includes SEO essentials, QA, and a clean handoff. Start where you are — upgrade any time.
           </p>
 
           <div className="inline-flex bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 mb-8 max-w-full overflow-x-auto">
@@ -161,47 +161,45 @@ export default function Pricing() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-10 h-10 rounded-full bg-lavender-200 flex items-center justify-center text-lavender-700">
-                  <Laptop className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-2xl font-serif text-gray-900">Website Design & Build Packages</h4>
-                  <p className="text-gray-500 text-sm">Choose this section if you need a new website or online store.</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch pt-3">
                 {websitePackages.map((pkg, idx) => (
                   <motion.div
                     key={pkg.title}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4, delay: idx * 0.05 }}
-                    className={`relative bg-white rounded-3xl p-8 border hover:-translate-y-1 transition-all duration-300 flex flex-col h-full ${
-                      pkg.popular ? 'border-lavender-500 shadow-xl shadow-lavender-900/5' : 'border-gray-100 shadow-sm hover:shadow-xl hover:shadow-lavender-900/5'
+                    className={`relative bg-white rounded-[18px] px-6 py-8 border transition-all duration-300 flex flex-col h-full ${
+                      pkg.popular ? 'border-2 border-lavender-500 shadow-xl shadow-lavender-500/20 lg:-translate-y-2' : 'border-lavender-100 shadow-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-lavender-900/5'
                     }`}
                   >
                     {pkg.popular && (
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-lavender-600 text-white text-xs font-bold uppercase tracking-wider py-1 px-4 rounded-full">
-                        Most Comprehensive
+                        Most Popular
                       </div>
                     )}
-                    <h5 className="text-xl font-bold text-gray-900 mb-2">{pkg.title}</h5>
-                    <p className="text-sm text-lavender-600 italic mb-4 min-h-[40px]">{pkg.hook}</p>
-                    <p className="text-sm text-gray-600 font-light mb-6 flex-grow">{pkg.description}</p>
-                    <div className="mb-6 pt-6 border-t border-gray-50 flex flex-col gap-2">
+                    <h5 className="text-[22px] font-serif font-semibold text-lavender-900 mb-1">{pkg.title}</h5>
+                    <p className="text-sm text-gray-500 leading-relaxed mb-5 min-h-[42px]">{pkg.hook}</p>
+                    <div className="mb-5">
                       <div>
-                        <p className="text-3xl font-bold text-gray-900">{pkg.priceTotal}</p>
-                        <p className="text-xs text-lavender-600 font-medium tracking-wide mt-1">ONE-TIME FEE</p>
-                        <p className="text-xs text-gray-500 mt-2">or {pkg.priceMonthly}</p>
+                        <p className="text-4xl font-bold text-gray-900">{pkg.priceTotal}</p>
+                        <p className="text-[11px] text-gray-500 font-medium tracking-[0.08em] uppercase mt-1">One-time fee</p>
+                        <p className="text-[13px] text-lavender-700 mt-1">or {pkg.priceMonthly}</p>
                       </div>
                     </div>
+                    <ul className="mb-7 flex-grow space-y-2.5">
+                      {pkg.features.map((feature) => (
+                        <li key={feature} className="relative pl-5 text-sm leading-relaxed text-gray-800">
+                          <span aria-hidden="true" className="absolute left-0 font-bold text-lavender-500">✓</span>
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
                     <div className="flex flex-col gap-3 mt-auto">
                       <a
                         href={pkg.linkBook}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full text-center py-3 rounded-xl bg-lavender-600 text-white text-sm font-medium hover:bg-lavender-700 transition-colors"
+                        className={`w-full text-center py-3 rounded-[10px] text-white text-sm font-semibold transition-colors ${pkg.popular ? 'bg-lavender-500 hover:bg-lavender-600' : 'bg-lavender-900 hover:bg-lavender-800'}`}
                       >
                         Book Website Build
                       </a>
@@ -209,7 +207,7 @@ export default function Pricing() {
                         href={pkg.linkPlan}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full text-center py-3 rounded-xl bg-lavender-50 text-lavender-700 text-sm font-medium hover:bg-lavender-100 transition-colors"
+                        className="w-full text-center py-3 rounded-[10px] bg-transparent text-lavender-700 border border-lavender-300 text-sm font-semibold hover:bg-lavender-50 transition-colors"
                       >
                         Start Payment Plan
                       </a>
@@ -217,10 +215,9 @@ export default function Pricing() {
                   </motion.div>
                 ))}
               </div>
-              <div className="mt-12 bg-lavender-50 border border-lavender-100 rounded-2xl p-6 text-center max-w-2xl mx-auto flex flex-col items-center">
-                <span className="bg-lavender-200 text-lavender-800 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3">Required Ongoing</span>
-                <p className="text-sm text-gray-700 font-medium whitespace-pre-wrap leading-relaxed">
-                  All websites require an ongoing Hosting & Maintenance plan to stay live and secure.{"\n"}
+              <div className="mt-12 bg-lavender-100 rounded-[14px] px-5 py-4 text-center max-w-2xl mx-auto">
+                <p className="text-[13px] text-gray-600 leading-relaxed">
+                  <strong className="text-lavender-900">Required ongoing:</strong> All websites require an ongoing Hosting & Maintenance plan to stay live and secure.{' '}
                   Plans start at <span className="font-bold text-lavender-700">$12.50/month</span> or <span className="font-bold text-lavender-700">$150/year</span>.
                 </p>
               </div>
