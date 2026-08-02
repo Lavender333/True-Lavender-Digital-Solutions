@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { browserLocalPersistence, setPersistence, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebaseAuth';
 import { LogIn } from 'lucide-react';
 
@@ -20,6 +20,7 @@ export default function Login() {
     setError(null);
 
     try {
+      await setPersistence(auth, browserLocalPersistence);
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
@@ -37,7 +38,7 @@ export default function Login() {
         return;
       }
 
-      window.location.hash = '#dashboard';
+      window.location.replace(`${window.location.origin}${window.location.pathname}#dashboard`);
     } catch (err: any) {
       setError(getLoginErrorMessage(err));
       console.error(err);
