@@ -20,7 +20,7 @@ export default function Login() {
       try {
         const result = await getRedirectResult(auth);
         const email = result?.user.email;
-        if (email && email !== 'antoinettewilliams@thetruelavender.online' && email !== 'antoinetteqwilliams@gmail.com') {
+        if (email && email !== 'antoinettewilliams@thetruelavender.online' && email !== 'antoinetteqwilliams@gmail.com' && email !== 'thetruelavender@gmail.com') {
           await auth.signOut();
           setError('Unauthorized email address. Please use the admin email.');
         }

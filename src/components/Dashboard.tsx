@@ -87,7 +87,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     
-    if (user.email !== 'antoinettewilliams@thetruelavender.online' && user.email !== 'antoinetteqwilliams@gmail.com') {
+    if (user.email !== 'antoinettewilliams@thetruelavender.online' && user.email !== 'antoinetteqwilliams@gmail.com' && user.email !== 'thetruelavender@gmail.com') {
       return;
     }
 
