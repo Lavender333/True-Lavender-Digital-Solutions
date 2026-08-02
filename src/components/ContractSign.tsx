@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebaseDb';
 import { format } from 'date-fns';
@@ -11,8 +11,29 @@ export default function ContractSign({ contractId }: { contractId: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  
   const [signature, setSignature] = useState('');
+  const [isDrawing, setIsDrawing] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (loading || success) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const scale = window.devicePixelRatio || 1;
+    canvas.width = rect.width * scale;
+    canvas.height = rect.height * scale;
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    context.scale(scale, scale);
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+    context.lineWidth = 2.5;
+    context.strokeStyle = '#1f2937';
+  }, [loading, success]);
 
   useEffect(() => {
     async function loadContract() {
@@ -37,6 +58,49 @@ export default function ContractSign({ contractId }: { contractId: string }) {
     }
     loadContract();
   }, [contractId]);
+
+  const getPointerPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  };
+
+  const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+
+    canvas.setPointerCapture(event.pointerId);
+    const { x, y } = getPointerPosition(event);
+    context.beginPath();
+    context.moveTo(x, y);
+    setIsDrawing(true);
+  };
+
+  const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const context = canvasRef.current?.getContext('2d');
+    if (!context) return;
+
+    const { x, y } = getPointerPosition(event);
+    context.lineTo(x, y);
+    context.stroke();
+  };
+
+  const stopDrawing = () => {
+    if (!isDrawing) return;
+    setIsDrawing(false);
+    const canvas = canvasRef.current;
+    if (canvas) setSignature(canvas.toDataURL('image/png'));
+  };
+
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (canvas && context) context.clearRect(0, 0, canvas.width, canvas.height);
+    setSignature('');
+  };
 
   const handleSign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,24 +225,42 @@ export default function ContractSign({ contractId }: { contractId: string }) {
                  
                  {success ? (
                    <div className="pt-2">
-                     <div className="font-serif text-3xl text-gray-900 italic opacity-80 mb-2">
-                       {contract.clientSignature}
-                     </div>
+                     {contract.clientSignature?.startsWith('data:image/') ? (
+                       <img
+                         src={contract.clientSignature}
+                         alt={`${contract.clientName}'s signature`}
+                         className="w-full h-24 object-contain object-left mb-2"
+                       />
+                     ) : (
+                       <div className="font-serif text-3xl text-gray-900 italic opacity-80 mb-2">
+                         {contract.clientSignature}
+                       </div>
+                     )}
                      <p className="text-xs text-green-600 flex items-center gap-1">
                        <CheckCircle2 className="w-3 h-3" /> Signed on {format(new Date(contract.clientSignedAt), "MMM d, yyyy")}
                      </p>
                    </div>
                  ) : (
                    <form onSubmit={handleSign} className="pt-2">
-                     <label className="block text-xs font-medium text-gray-700 mb-2">Type your full name to sign</label>
-                     <input 
-                       type="text" 
-                       value={signature} 
-                       onChange={e => setSignature(e.target.value)} 
-                       required
-                       placeholder="Full Name"
-                       className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-lavender-500 mb-3"
+                     <label className="block text-xs font-medium text-gray-700 mb-2">Draw your signature below</label>
+                     <canvas
+                       ref={canvasRef}
+                       onPointerDown={startDrawing}
+                       onPointerMove={draw}
+                       onPointerUp={stopDrawing}
+                       onPointerCancel={stopDrawing}
+                       onPointerLeave={stopDrawing}
+                       className="w-full h-40 bg-white rounded-lg border border-gray-300 cursor-crosshair touch-none mb-2"
+                       aria-label="Draw your signature"
                      />
+                     <button
+                       type="button"
+                       onClick={clearSignature}
+                       disabled={!signature}
+                       className="mb-3 text-xs font-medium text-lavender-700 hover:text-lavender-900 disabled:text-gray-400"
+                     >
+                       Clear signature
+                     </button>
                      <button 
                        type="submit" 
                        disabled={!signature.trim()}
