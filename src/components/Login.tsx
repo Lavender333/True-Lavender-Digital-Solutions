@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getRedirectResult, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import React, { useState } from 'react';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebaseAuth';
 import { LogIn } from 'lucide-react';
 
@@ -15,24 +15,6 @@ export default function Login() {
     return err?.message || 'Failed to login';
   };
 
-  useEffect(() => {
-    async function checkRedirectResult() {
-      try {
-        const result = await getRedirectResult(auth);
-        const email = result?.user.email;
-        if (email && email !== 'antoinettewilliams@thetruelavender.online' && email !== 'antoinetteqwilliams@gmail.com' && email !== 'thetruelavender@gmail.com') {
-          await auth.signOut();
-          setError('Unauthorized email address. Please use the admin email.');
-        }
-      } catch (err: any) {
-        setError(getLoginErrorMessage(err));
-        console.error(err);
-      }
-    }
-
-    checkRedirectResult();
-  }, []);
-
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
@@ -40,7 +22,22 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const email = result.user.email?.toLowerCase();
+      const adminEmails = [
+        'antoinettewilliams@thetruelavender.online',
+        'antoinetteqwilliams@gmail.com',
+        'thetruelavender@gmail.com',
+      ];
+
+      if (!email || !adminEmails.includes(email)) {
+        await auth.signOut();
+        setError('Unauthorized email address. Please use an approved admin email.');
+        setLoading(false);
+        return;
+      }
+
+      window.location.hash = '#dashboard';
     } catch (err: any) {
       setError(getLoginErrorMessage(err));
       console.error(err);
