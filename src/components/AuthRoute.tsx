@@ -1,4 +1,4 @@
-import React, { ComponentType, Suspense } from 'react';
+import React, { ComponentType, Suspense, useEffect } from 'react';
 import { AuthProvider, useAuth } from './AuthProvider';
 import Navigation from './Navigation';
 import Footer from './Footer';
@@ -19,18 +19,18 @@ function LoadingScreen() {
 function AuthRouteContent({ route, component: Component }: AuthRouteProps) {
   const { user, loading } = useAuth();
 
-  if (loading) {
+  useEffect(() => {
+    if (loading) return;
+
+    if (route === 'login' && user) {
+      window.location.replace(`${window.location.origin}${window.location.pathname}#dashboard`);
+    } else if (route === 'dashboard' && !user) {
+      window.location.replace(`${window.location.origin}${window.location.pathname}#login`);
+    }
+  }, [loading, route, user]);
+
+  if (loading || (route === 'login' && user) || (route === 'dashboard' && !user)) {
     return <LoadingScreen />;
-  }
-
-  if (route === 'login' && user) {
-    window.location.hash = '#dashboard';
-    return null;
-  }
-
-  if (route === 'dashboard' && !user) {
-    window.location.hash = '#login';
-    return null;
   }
 
   return (
