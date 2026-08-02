@@ -61,11 +61,11 @@ export default function App() {
 
     const load = () => setLoadMarketingSections(true);
     if ('requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(load, { timeout: 1200 });
+      const idleId = window.requestIdleCallback(load, { timeout: 300 });
       return () => window.cancelIdleCallback(idleId);
     }
 
-    const timeoutId = globalThis.setTimeout(load, 500);
+    const timeoutId = globalThis.setTimeout(load, 150);
     return () => globalThis.clearTimeout(timeoutId);
   }, [contractId, hash, loadMarketingSections, meetId]);
 

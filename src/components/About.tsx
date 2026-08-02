@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-const founderImageSrc = `${import.meta.env.BASE_URL}founder-antoinette-williams.png`;
 const founderImageJpegSrc = `${import.meta.env.BASE_URL}founder-antoinette-williams.jpg`;
 
 export default function About() {
@@ -17,17 +16,15 @@ export default function About() {
             className="w-full md:w-1/2"
           >
             <div className="relative aspect-square overflow-hidden rounded-3xl bg-lavender-50">
-              <picture className="block w-full h-full">
-                <source srcSet={founderImageJpegSrc} type="image/jpeg" />
-                <img
-                  src={founderImageSrc}
-                  alt="Antoinette Williams - Founder of True Lavender Digital Services"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  width="800"
-                  height="800"
-                />
-              </picture>
+              <img
+                src={founderImageJpegSrc}
+                alt="Antoinette Williams - Founder of True Lavender Digital Services"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                width="720"
+                height="900"
+              />
               <div className="absolute inset-0 bg-lavender-900/10 mix-blend-multiply" />
             </div>
           </motion.div>
