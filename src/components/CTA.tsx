@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
+const formSubmitEndpoint = 'https://formsubmit.co/ajax/antoinettewilliams@thetruelavender.online';
+
 export default function CTA() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,18 +22,26 @@ export default function CTA() {
     setError('');
 
     try {
-      const [{ collection, addDoc }, { db }] = await Promise.all([
-        import('firebase/firestore'),
-        import('../lib/firebaseDb')
-      ]);
-
-      await addDoc(collection(db, 'messages'), {
-        name,
-        email,
-        message,
-        createdAt: Date.now(),
-        read: false
+      const response = await fetch(formSubmitEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          _replyto: email,
+          _subject: 'New True Lavender website inquiry',
+          _template: 'table',
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('FormSubmit request failed');
+      }
+
       setSuccess(true);
       setName('');
       setEmail('');
@@ -70,7 +80,12 @@ export default function CTA() {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl text-left">
+          <form
+            action={formSubmitEndpoint}
+            method="POST"
+            onSubmit={handleSubmit}
+            className="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl text-left"
+          >
             {error && (
               <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm">
                 {error}
@@ -81,6 +96,7 @@ export default function CTA() {
               <input 
                 type="text" 
                 id="name" 
+                name="name"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 required
@@ -93,6 +109,7 @@ export default function CTA() {
               <input 
                 type="email" 
                 id="email" 
+                name="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
@@ -104,6 +121,7 @@ export default function CTA() {
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
               <textarea 
                 id="message" 
+                name="message"
                 rows={4}
                 value={message}
                 onChange={e => setMessage(e.target.value)}
