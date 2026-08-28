@@ -140,7 +140,7 @@ export default function Dashboard() {
           terms: contractTerms,
         });
       } else {
-        await addDoc(collection(db, 'contracts'), {
+        const contractRef = await addDoc(collection(db, 'contracts'), {
           hostId: user.uid,
           clientName: contractClientName,
           clientEmail: contractClientEmail,
@@ -153,6 +153,23 @@ export default function Dashboard() {
           clientSignedAt: null,
           status: 'sent',
           createdAt: Date.now(),
+        });
+
+        const signingUrl = `${appUrl}/?contract=${contractRef.id}`;
+        await addDoc(collection(db, 'mail'), {
+          to: [contractClientEmail.trim()],
+          message: {
+            subject: `Signature requested: ${contractServiceName}`,
+            text: `Dear ${contractClientName.trim()},\n\nTrue Lavender has sent you a service agreement for ${contractServiceName}. Please review and sign the agreement using this secure link:\n\n${signingUrl}\n\nThank you,\nTrue Lavender Digital Solutions`,
+            html: `
+              <p>Dear ${contractClientName.trim()},</p>
+              <p>True Lavender has sent you a service agreement for <strong>${contractServiceName}</strong>.</p>
+              <p>Please review and sign the agreement using the button below:</p>
+              <p><a href="${signingUrl}" style="display:inline-block;padding:12px 20px;background:#111827;color:#ffffff;text-decoration:none;border-radius:8px;">Review &amp; Sign Contract</a></p>
+              <p>If the button does not work, copy and paste this link into your browser:<br><a href="${signingUrl}">${signingUrl}</a></p>
+              <p>Thank you,<br>True Lavender Digital Solutions</p>
+            `,
+          },
         });
       }
       setIsCreatingContract(false);
@@ -820,7 +837,7 @@ export default function Dashboard() {
                       type="submit" 
                       className="bg-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors"
                     >
-                      Sign & Generate Link
+                      {editingContractId ? 'Save Changes' : 'Email Contract for Signature'}
                     </button>
                     <button 
                       type="button" 
