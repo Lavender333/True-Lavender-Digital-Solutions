@@ -11,29 +11,11 @@ export default function ContractSign({ contractId }: { contractId: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
   const [signature, setSignature] = useState('');
-  const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    if (loading || success) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = rect.width * scale;
-    canvas.height = rect.height * scale;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    context.scale(scale, scale);
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    context.lineWidth = 2.5;
-    context.strokeStyle = '#1f2937';
-  }, [loading, success]);
+  const drawingRef = useRef(false);
 
   useEffect(() => {
     async function loadContract() {
@@ -43,6 +25,8 @@ export default function ContractSign({ contractId }: { contractId: string }) {
         if (snapshot.exists()) {
           const data = snapshot.data();
           setContract({ id: snapshot.id, ...data });
+          setClientName(data.clientName || '');
+          setClientEmail(data.clientEmail || '');
           if (data.clientSignature) {
             setSuccess(true);
           }
@@ -59,38 +43,44 @@ export default function ContractSign({ contractId }: { contractId: string }) {
     loadContract();
   }, [contractId]);
 
-  const getPointerPosition = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
+  const getCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current!;
     const rect = canvas.getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    return {
+      x: (event.clientX - rect.left) * (canvas.width / rect.width),
+      y: (event.clientY - rect.top) * (canvas.height / rect.height),
+    };
   };
 
   const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if (!canvas || !context) return;
-
+    if (!canvas) return;
+    drawingRef.current = true;
     canvas.setPointerCapture(event.pointerId);
-    const { x, y } = getPointerPosition(event);
+    const point = getCanvasPoint(event);
+    const context = canvas.getContext('2d');
+    if (!context) return;
     context.beginPath();
-    context.moveTo(x, y);
-    setIsDrawing(true);
+    context.moveTo(point.x, point.y);
   };
 
-  const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    const context = canvasRef.current?.getContext('2d');
-    if (!context) return;
-
-    const { x, y } = getPointerPosition(event);
-    context.lineTo(x, y);
+  const drawSignature = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drawingRef.current) return;
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (!canvas || !context) return;
+    const point = getCanvasPoint(event);
+    context.lineWidth = 3;
+    context.lineCap = 'round';
+    context.lineJoin = 'round';
+    context.strokeStyle = '#111827';
+    context.lineTo(point.x, point.y);
     context.stroke();
   };
 
   const stopDrawing = () => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
+    if (!drawingRef.current) return;
+    drawingRef.current = false;
     const canvas = canvasRef.current;
     if (canvas) setSignature(canvas.toDataURL('image/png'));
   };
@@ -104,12 +94,14 @@ export default function ContractSign({ contractId }: { contractId: string }) {
 
   const handleSign = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signature.trim()) return;
+    if (!clientName.trim() || !clientEmail.trim() || !signature) return;
 
     try {
       const docRef = doc(db, 'contracts', contractId);
       await updateDoc(docRef, {
         clientSignature: signature,
+        clientSignerName: clientName.trim(),
+        clientSignerEmail: clientEmail.trim(),
         clientSignedAt: Date.now(),
         clientIp: 'Client IP logged', // In a real environment, you'd capture IP from server or CF headers
       });
@@ -117,12 +109,12 @@ export default function ContractSign({ contractId }: { contractId: string }) {
       // Trigger Email Notification (Requires Firebase 'Trigger Email' Extension)
       try {
         await addDoc(collection(db, 'mail'), {
-          to: [contract.clientEmail, 'antoinettewilliams@thetruelavender.online'],
+          to: [clientEmail.trim(), 'antoinettewilliams@thetruelavender.online'],
           message: {
             subject: `Contract Executed: ${contract.serviceName} with True Lavender`,
-            text: `Dear ${contract.clientName},\n\nYour contract for ${contract.serviceName} has been successfully signed by both parties. You may view and print your finalized contract here: ${appUrl}/?contract=${contractId}\n\nThank you for choosing True Lavender Digital Services!`,
+            text: `Dear ${clientName.trim()},\n\nYour contract for ${contract.serviceName} has been successfully signed by both parties. You may view and print your finalized contract here: ${appUrl}/?contract=${contractId}\n\nThank you for choosing True Lavender Digital Services!`,
             html: `
-              <p>Dear ${contract.clientName},</p>
+              <p>Dear ${clientName.trim()},</p>
               <p>Your contract for <strong>${contract.serviceName}</strong> has been successfully signed by both parties.</p>
               <p>You may view and print your finalized contract here: <a href="${appUrl}/?contract=${contractId}">View Contract</a></p>
               <p>Thank you for choosing True Lavender Digital Services!</p>
@@ -138,6 +130,8 @@ export default function ContractSign({ contractId }: { contractId: string }) {
       setContract({
         ...contract,
         clientSignature: signature,
+        clientSignerName: clientName.trim(),
+        clientSignerEmail: clientEmail.trim(),
         clientSignedAt: Date.now()
       });
     } catch (err: any) {
@@ -225,45 +219,66 @@ export default function ContractSign({ contractId }: { contractId: string }) {
                  
                  {success ? (
                    <div className="pt-2">
+                     <p className="font-semibold text-gray-900">{contract.clientSignerName || contract.clientName}</p>
+                     <p className="text-sm text-gray-600 mb-3">{contract.clientSignerEmail || contract.clientEmail}</p>
                      {contract.clientSignature?.startsWith('data:image/') ? (
-                       <img
-                         src={contract.clientSignature}
-                         alt={`${contract.clientName}'s signature`}
-                         className="w-full h-24 object-contain object-left mb-2"
-                       />
+                       <img src={contract.clientSignature} alt="Client signature" className="h-20 max-w-full object-contain object-left mb-2" />
                      ) : (
-                       <div className="font-serif text-3xl text-gray-900 italic opacity-80 mb-2">
-                         {contract.clientSignature}
-                       </div>
+                       <div className="font-serif text-3xl text-gray-900 italic opacity-80 mb-2">{contract.clientSignature}</div>
                      )}
                      <p className="text-xs text-green-600 flex items-center gap-1">
                        <CheckCircle2 className="w-3 h-3" /> Signed on {format(new Date(contract.clientSignedAt), "MMM d, yyyy")}
                      </p>
                    </div>
                  ) : (
-                   <form onSubmit={handleSign} className="pt-2">
-                     <label className="block text-xs font-medium text-gray-700 mb-2">Draw your signature below</label>
-                     <canvas
-                       ref={canvasRef}
-                       onPointerDown={startDrawing}
-                       onPointerMove={draw}
-                       onPointerUp={stopDrawing}
-                       onPointerCancel={stopDrawing}
-                       onPointerLeave={stopDrawing}
-                       className="w-full h-40 bg-white rounded-lg border border-gray-300 cursor-crosshair touch-none mb-2"
-                       aria-label="Draw your signature"
-                     />
-                     <button
-                       type="button"
-                       onClick={clearSignature}
-                       disabled={!signature}
-                       className="mb-3 text-xs font-medium text-lavender-700 hover:text-lavender-900 disabled:text-gray-400"
-                     >
-                       Clear signature
-                     </button>
+                   <form onSubmit={handleSign} className="pt-2 space-y-3">
+                     <div>
+                       <label htmlFor="client-name" className="block text-xs font-medium text-gray-700 mb-2">Full name</label>
+                       <input
+                         id="client-name"
+                         type="text"
+                         value={clientName}
+                         onChange={e => setClientName(e.target.value)}
+                         required
+                         autoComplete="name"
+                         placeholder="Full Name"
+                         className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-lavender-500"
+                       />
+                     </div>
+                     <div>
+                       <label htmlFor="client-email" className="block text-xs font-medium text-gray-700 mb-2">Email address</label>
+                       <input
+                         id="client-email"
+                         type="email"
+                         value={clientEmail}
+                         onChange={e => setClientEmail(e.target.value)}
+                         required
+                         autoComplete="email"
+                         placeholder="you@example.com"
+                         className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:border-lavender-500"
+                       />
+                     </div>
+                     <div>
+                       <div className="flex items-center justify-between mb-2">
+                         <label className="block text-xs font-medium text-gray-700">Draw your signature below</label>
+                         <button type="button" onClick={clearSignature} className="text-xs text-lavender-700 hover:text-lavender-900">Clear</button>
+                       </div>
+                       <canvas
+                         ref={canvasRef}
+                         width={600}
+                         height={180}
+                         onPointerDown={startDrawing}
+                         onPointerMove={drawSignature}
+                         onPointerUp={stopDrawing}
+                         onPointerCancel={stopDrawing}
+                         onPointerLeave={stopDrawing}
+                         className="w-full h-32 rounded-lg border border-gray-300 bg-white touch-none cursor-crosshair"
+                         aria-label="Signature drawing area"
+                       />
+                     </div>
                      <button 
                        type="submit" 
-                       disabled={!signature.trim()}
+                       disabled={!clientName.trim() || !clientEmail.trim() || !signature}
                        className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
                      >
                        Sign Agreement
