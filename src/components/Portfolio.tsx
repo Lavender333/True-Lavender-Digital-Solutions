@@ -4,6 +4,12 @@ import { ExternalLink, Layout } from 'lucide-react';
 
 const examples = [
   {
+    title: "Liticia's Sunflower Farm",
+    link: 'https://liticiasunflowerfarm.com',
+    displayLink: 'liticiasunflowerfarm.com',
+    note: 'Farm website and digital presence',
+  },
+  {
     title: 'Vershante Lynn Aesthetics',
     link: 'https://vershantelynnaesthetics.com/',
     displayLink: 'vershantelynnaesthetics.com',
